@@ -85,7 +85,22 @@ export default function AboutSection() {
               </p>
 
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-transparent border-l-4 border-cyan-500">
-                <span className="text-2xl">💡</span>
+                <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width="28" 
+      height="28" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className="text-cyan-500 relative z-10 group-hover:rotate-12 transition-transform duration-300"
+    >
+      <circle cx="12" cy="12" r="10"/>
+      <circle cx="12" cy="12" r="6"/>
+      <circle cx="12" cy="12" r="2"/>
+    </svg>
                 <p className="text-sm font-medium text-gray-800 dark:text-gray-200 uppercase tracking-wider">
                   Goal: Building Intelligent Systems with Scalable Architectures.
                 </p>

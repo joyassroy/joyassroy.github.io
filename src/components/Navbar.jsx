@@ -28,7 +28,7 @@ export default function Navbar() {
             whileHover={{ scale: 1.05 }}
             className="flex-shrink-0 font-black text-2xl tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600"
           >
-            <a href="#home">JB</a>
+            <a href="#home">Joyassroy</a>
           </motion.div>
           
           {/* ডেস্কটপ মেনু */}
