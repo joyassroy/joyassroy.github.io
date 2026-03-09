@@ -17,10 +17,10 @@ export default function ContactSection() {
 
     // নিচের আইডিগুলো আপনার EmailJS ড্যাশবোর্ড থেকে নিয়ে এখানে বসান
     emailjs.sendForm(
-      'service_larp6pt', // Service ID
-      'template_0d5w9uf', // Template ID
+      'service_l6pt', // Service ID
+      'templatew9uf', // Template ID
       form.current, 
-      '_kcwQaAXvzBdOok19' // Public Key (Account > API Keys)
+      '_kcwQa' // Public Key (Account > API Keys)
     )
     .then((result) => {
         setIsSubmitting(false);
