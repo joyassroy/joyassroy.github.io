@@ -180,7 +180,7 @@ export default function ContactSection() {
               <div className="flex justify-center w-full py-1 overflow-hidden rounded-xl">
                 <ReCAPTCHA
                   ref={recaptchaRef}
-                  sitekey="6Ld5MYUsAAAAAKpHXFe6UeNMUf1Vj88zW3xnObKN"
+                  sitekey="6Ld3_YUsAAAAAMEK805fmTWFsnJBHDwOpZfM0FDr"
                   onChange={(token) => setCaptchaToken(token)}
                   onExpired={() => setCaptchaToken(null)}
                 />
