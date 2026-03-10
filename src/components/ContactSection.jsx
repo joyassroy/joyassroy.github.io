@@ -2,42 +2,79 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, MapPin, Linkedin, Github, Send, CheckCircle, AlertTriangle } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import emailjs from '@emailjs/browser';
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function ContactSection() {
   const form = useRef();
+  const recaptchaRef = useRef();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [isCooldown, setIsCooldown] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
+
+  useEffect(() => {
+    emailjs.init({
+      publicKey: '_kcwQa',
+      limitRate: {
+        id: 'portfolio_contact',
+        throttle: 60000, 
+      },
+    });
+  }, []);
 
   const sendEmail = (e) => {
     e.preventDefault();
+
+    if (e.target.botcheck.value) {
+      setSubmitStatus('error');
+      return; 
+    }
+
+    if (isCooldown) {
+      alert("একটু অপেক্ষা করুন! আপনি কিছুক্ষণ আগেই একটি মেসেজ পাঠিয়েছেন। ⏳");
+      return;
+    }
+
+    if (!captchaToken) {
+      alert("দয়া করে প্রমাণ করুন যে আপনি রোবট নন! 🤖");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus(null);
 
-    // নিচের আইডিগুলো আপনার EmailJS ড্যাশবোর্ড থেকে নিয়ে এখানে বসান
     emailjs.sendForm(
-      'service_l6pt', // Service ID
-      'templatew9uf', // Template ID
+      'service_larp6pt', 
+      'template_0d5w9uf', 
       form.current, 
-      '_kcwQa' // Public Key (Account > API Keys)
+      '_kcwQa' 
     )
     .then((result) => {
         setIsSubmitting(false);
         setSubmitStatus('success');
-        form.current.reset(); // মেসেজ যাওয়ার পর ফর্ম খালি হয়ে যাবে
+        form.current.reset(); 
         
-        // ৫ সেকেন্ড পর সাকসেস মেসেজ সরিয়ে ফেলার জন্য (সময় একটু বাড়ালাম দেখার সুবিধার জন্য)
+        recaptchaRef.current.reset();
+        setCaptchaToken(null);
+        
+        setIsCooldown(true);
+        setTimeout(() => setIsCooldown(false), 60000); 
+
         setTimeout(() => setSubmitStatus(null), 5000);
     }, (error) => {
         setIsSubmitting(false);
         setSubmitStatus('error');
+        recaptchaRef.current.reset();
+        setCaptchaToken(null);
+        setTimeout(() => setSubmitStatus(null), 5000);
     });
   };
 
   return (
     <section id="contact" className="py-24 px-4 relative overflow-hidden bg-transparent">
-      {/* Background Lighting Glow */}
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute top-1/2 left-0 w-72 h-72 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none"></div>
 
@@ -55,7 +92,6 @@ export default function ContactSection() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12 items-stretch">
-          {/* Contact Info Card - অপরিবর্তিত রাখা হয়েছে */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -100,57 +136,66 @@ export default function ContactSection() {
             </div>
           </motion.div>
 
-          {/* Contact Form Card */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="p-8 md:p-12 rounded-[2.5rem] bg-white/40 dark:bg-white/[0.03] backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-2xl relative overflow-hidden" // overflow-hidden যোগ করা হয়েছে অ্যানিমেশনের জন্য
+            className="p-8 md:p-12 rounded-[2.5rem] bg-white/40 dark:bg-white/[0.03] backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-2xl relative overflow-hidden"
           >
-            <form ref={form} onSubmit={sendEmail} className="space-y-8 relative z-10"> 
-              <div className="space-y-4"> 
+            <form ref={form} onSubmit={sendEmail} className="space-y-6 relative z-10"> 
+              <input type="text" name="botcheck" className="hidden" style={{ display: "none" }} tabIndex="-1" autoComplete="off" />
+
+              <div className="space-y-3"> 
                 <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Full Name</label>
                 <input 
                   type="text" 
-                  name="from_name" // EmailJS এর জন্য নাম দেওয়া হয়েছে
+                  name="from_name" 
                   required
                   placeholder="Enter your name" 
                   className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 dark:text-white transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600" 
                 />
               </div>
-              <div className="space-y-4"> 
+              <div className="space-y-3"> 
                 <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Email Address</label>
                 <input 
                   type="email" 
-                  name="reply_to" // EmailJS এর জন্য নাম দেওয়া হয়েছে
+                  name="reply_to" 
                   required
                   placeholder="name@example.com" 
                   className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 dark:text-white transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600" 
                 />
               </div>
-              <div className="space-y-4"> 
+              <div className="space-y-3"> 
                 <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Message</label>
                 <textarea 
-                  name="message" // EmailJS এর জন্য নাম দেওয়া হয়েছে
+                  name="message" 
                   required
-                  rows="5" 
+                  rows="4" 
                   placeholder="Write your message here..." 
                   className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 dark:text-white transition-all resize-none placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 ></textarea>
               </div>
+
+              <div className="flex justify-center w-full py-1 overflow-hidden rounded-xl">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey="6Ld5MYUsAAAAAKpHXFe6UeNMUf1Vj88zW3xnObKN"
+                  onChange={(token) => setCaptchaToken(token)}
+                  onExpired={() => setCaptchaToken(null)}
+                />
+              </div>
               
               <button 
                 type="submit" 
-                disabled={isSubmitting}
-                className={`group w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-lg shadow-xl shadow-cyan-500/25 transition-all flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-cyan-500/40 active:scale-95'}`}
+                disabled={isSubmitting || isCooldown || !captchaToken}
+                className={`group w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-lg shadow-xl shadow-cyan-500/25 transition-all flex items-center justify-center gap-3 ${(isSubmitting || isCooldown || !captchaToken) ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-cyan-500/40 active:scale-95'}`}
               >
-                {isSubmitting ? 'Sending...' : 'Send Message'} 
-                {!isSubmitting && <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                {isSubmitting ? 'Sending...' : isCooldown ? 'Sent! Please wait...' : !captchaToken ? 'Complete Captcha First' : 'Send Message'} 
+                {(!isSubmitting && !isCooldown && captchaToken) && <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
               </button>
             </form>
 
-            {/* --- নতুন এনিমেটেড গ্লাস স্ট্যাটাস মেসেজ --- */}
             <AnimatePresence>
               {submitStatus && (
                 <motion.div 
@@ -167,7 +212,6 @@ export default function ContactSection() {
                 </motion.div>
               )}
             </AnimatePresence>
-            {/* ------------------------------------------- */}
           </motion.div>
         </div>
       </div>
