@@ -6,8 +6,16 @@ import Footer from "../components/Footer";
 import SmoothScroll from "../components/SmoothScroll"; // Lenis ইমপোর্ট করা হলো
 
 export const metadata = {
-  title: "Joyassroy Barua | Software Engineer",
-  description: "Portfolio of Joyassroy Barua, a Results-driven Software Engineer.",
+  title: 'Joyassroy Barua | Full Stack Web Developer & Software Engineer',
+  description: 'Portfolio of Joyassroy Barua, a Machine Learning enthusiast and Web Developer. Explore my projects like Crop Mate and Emergency Service Directory.',
+  keywords: ['Joyassroy Barua', 'ijb','jb', 'Machine Learning', 'Next.js Developer','Full Stack Developer','MERN Stack Developer', 'React', 'Stripe Api', 'Portfolio'],
+  openGraph: {
+    title: 'Joyassroy Barua | Portfolio',
+    description: 'Explore the portfolio and projects of Joyassroy Barua.',
+    url: 'https://joyassroy-barua.me',
+    siteName: 'Joyassroy Barua Portfolio',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({ children }) {
